@@ -23,9 +23,7 @@ import org.wso2.carbon.esb.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.esb.connector.exception.SalesforceConnectionException;
 import org.wso2.carbon.esb.connector.pojo.CreateQueryJobPayload;
 import org.wso2.carbon.esb.connector.pojo.SalesforceConfig;
-import org.wso2.carbon.esb.connector.requests.SalesforceRequest;
 import org.wso2.carbon.esb.connector.store.SalesforceConfigStore;
-import org.wso2.carbon.esb.connector.utils.ResponseConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceUtils;
 
@@ -36,10 +34,11 @@ public class CreateQueryJob extends AbstractConnector {
             log.debug("Creating salesforce query job");
             String sfOAuthConfigName = SalesforceUtils.getConnectionName(messageContext);
             SalesforceConfig salesforceConfig = SalesforceConfigStore.getSalesforceConfig(sfOAuthConfigName);
-            SalesforceRequest salesforceRequest = new SalesforceRequest(salesforceConfig, messageContext);
             CreateQueryJobPayload createQueryJobPayload = getCreateQueryJobPayload(messageContext);
-            String jobInfo = salesforceRequest.createQueryJob(createQueryJobPayload);
-            SalesforceUtils.generateJsonOutput(messageContext, jobInfo, ResponseConstants.HTTP_CREATED);
+            String payload = createQueryJobPayload.toJson();
+            String createQueryJobUrl = SalesforceUtils.getCreateQueryJobUrl(salesforceConfig);
+            messageContext.setProperty(SalesforceConstants.CREATE_QUERY_JOB_URL, createQueryJobUrl);
+            messageContext.setProperty(SalesforceConstants.PAYLOAD, payload);
         } catch (Exception e) {
             SalesforceUtils.setErrorsInMessage(messageContext, 1, e.getMessage());
             SalesforceUtils.generateErrorOutput(messageContext, e);

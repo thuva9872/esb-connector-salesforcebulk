@@ -21,9 +21,7 @@ import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.esb.connector.exception.SalesforceConnectionException;
 import org.wso2.carbon.esb.connector.pojo.SalesforceConfig;
-import org.wso2.carbon.esb.connector.requests.SalesforceRequest;
 import org.wso2.carbon.esb.connector.store.SalesforceConfigStore;
-import org.wso2.carbon.esb.connector.utils.ResponseConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceUtils;
 
@@ -33,12 +31,10 @@ public class DeleteQueryJob extends AbstractConnector {
         try {
             String sfOAuthConfigName = SalesforceUtils.getConnectionName(messageContext);
             SalesforceConfig salesforceConfig = SalesforceConfigStore.getSalesforceConfig(sfOAuthConfigName);
-            SalesforceRequest salesforceRequest = new SalesforceRequest(salesforceConfig, messageContext);
             String queryJobId = (String) getParameter(messageContext, SalesforceConstants.QUERY_JOB_ID);
             log.debug("Deleting query job with id: " + queryJobId);
-            salesforceRequest.deleteQueryJob(queryJobId);
-            SalesforceUtils.generateJsonOutput(messageContext, SalesforceUtils.getSuccessJson(),
-                    ResponseConstants.HTTP_OK);
+            String deleteQueryJobUrl = SalesforceUtils.getDeleteQueryJobUrl(salesforceConfig, queryJobId);
+            messageContext.setProperty(SalesforceConstants.DELETE_QUERY_JOB_URL, deleteQueryJobUrl);
         } catch (Exception e) {
             SalesforceUtils.setErrorsInMessage(messageContext, 1, e.getMessage());
             SalesforceUtils.generateErrorOutput(messageContext, e);

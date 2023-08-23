@@ -24,13 +24,12 @@
 	<parameter name="name" description="Unique name of salesforce OAuth configuration name"/>
 	<parameter name="instanceUrl" description="Instance URL"/>
 	<sequence>
-		<property name="clientId" expression="$func:clientId"/>
-		<property name="clientSecret" expression="$func:clientSecret"/>
-		<property name="refreshToken" expression="$func:refreshToken"/>
-		<property name="accessToken" expression="$func:accessToken"/>
-		<property name="name" expression="$func:name"/>
-		<property name="instanceUrl" expression="$func:instanceUrl"/>
-		<property name="instanceUrlTest" expression="$func:instanceUrl" scope="axis2"/>
+		<property name="sf_bulk_clientId" expression="$func:clientId"/>
+		<property name="sf_bulk_clientSecret" expression="$func:clientSecret"/>
+		<property name="sf_bulk_refreshToken" expression="$func:refreshToken"/>
+		<property name="sf_bulk_accessToken" expression="$func:accessToken"/>
+		<property name="sf_bulk_config_name" expression="$func:name"/>
+		<property name="sf_bulk_instanceUrl" expression="$func:instanceUrl"/>
 		<class name="org.wso2.carbon.esb.connector.operations.InitSalesforce" />
 	</sequence>
 </template>

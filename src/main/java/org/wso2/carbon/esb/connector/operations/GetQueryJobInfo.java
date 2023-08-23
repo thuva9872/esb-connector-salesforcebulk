@@ -21,9 +21,7 @@ import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.esb.connector.exception.SalesforceConnectionException;
 import org.wso2.carbon.esb.connector.pojo.SalesforceConfig;
-import org.wso2.carbon.esb.connector.requests.SalesforceRequest;
 import org.wso2.carbon.esb.connector.store.SalesforceConfigStore;
-import org.wso2.carbon.esb.connector.utils.ResponseConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceUtils;
 
@@ -33,11 +31,9 @@ public class GetQueryJobInfo  extends AbstractConnector {
         try {
             String sfOAuthConfigName = SalesforceUtils.getConnectionName(messageContext);
             SalesforceConfig salesforceConfig = SalesforceConfigStore.getSalesforceConfig(sfOAuthConfigName);
-            SalesforceRequest salesforceRequest = new SalesforceRequest(salesforceConfig, messageContext);
             String queryJobId = (String) getParameter(messageContext, SalesforceConstants.QUERY_JOB_ID);
-            log.debug("Getting query job info with id: " + queryJobId);
-            String queryJobInfo = salesforceRequest.getQueryJobInfo(queryJobId);
-            SalesforceUtils.generateJsonOutput(messageContext, queryJobInfo, ResponseConstants.HTTP_OK);
+            String queryJobInfoUrl = SalesforceUtils.getGetQueryJobInfoUrl(salesforceConfig, queryJobId);
+            messageContext.setProperty(SalesforceConstants.QUERY_JOB_INFO_URL, queryJobInfoUrl);
         } catch (Exception e) {
             SalesforceUtils.setErrorsInMessage(messageContext, 1, e.getMessage());
             SalesforceUtils.generateErrorOutput(messageContext, e);

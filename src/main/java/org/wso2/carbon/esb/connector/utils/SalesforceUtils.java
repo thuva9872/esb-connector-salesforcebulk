@@ -17,8 +17,14 @@
  */
 package org.wso2.carbon.esb.connector.utils;
 
+import au.com.bytecode.opencsv.CSVReader;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +35,12 @@ import org.wso2.carbon.esb.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.esb.connector.exception.ResponseParsingException;
 import org.wso2.carbon.esb.connector.exception.SalesforceConnectionException;
 import org.wso2.carbon.esb.connector.pojo.SalesforceConfig;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SalesforceUtils {
 
@@ -103,7 +115,7 @@ public class SalesforceUtils {
             }
             paramString += SalesforceConstants.QUERY_LOCATOR + "=" + queryLocator;
         }
-        if (StringUtils.isNotEmpty(jobType)) {
+        if (StringUtils.isNotEmpty(jobType) & !StringUtils.equalsIgnoreCase(jobType,"All")) {
             if (StringUtils.isNotEmpty(paramString)) {
                 paramString += "&";
             }
@@ -127,7 +139,7 @@ public class SalesforceUtils {
             }
             paramString += SalesforceConstants.QUERY_LOCATOR + "=" + queryLocator;
         }
-        if (StringUtils.isNotEmpty(jobType)) {
+        if (StringUtils.isNotEmpty(jobType) & !StringUtils.equalsIgnoreCase(jobType,"All")) {
             if (StringUtils.isNotEmpty(paramString)) {
                 paramString += "&";
             }
@@ -183,10 +195,8 @@ public class SalesforceUtils {
     }
 
     public static String getSFTokenUrl(SalesforceConfig salesforceConfig) {
-        return salesforceConfig.getInstanceUrl() + SalesforceConstants.SF_TOKEN_RELATIVE_PATH + "?" + GRANT_TYPE + "="
-                + REFRESH_TOKEN + "&" + CLIENT_ID + "=" + salesforceConfig.getClientId() + "&"
-                + CLIENT_SECRET + "=" + salesforceConfig.getClientSecret() + "&" + REFRESH_TOKEN + "="
-                + salesforceConfig.getRefreshToken();
+
+        return salesforceConfig.getInstanceUrl() + SalesforceConstants.SF_TOKEN_RELATIVE_PATH;
     }
 
     /**
@@ -250,7 +260,59 @@ public class SalesforceUtils {
         }
     }
 
-    public static String csvToJson(String csvString) {
+    public static String csvToJson(String csvString) throws IOException {
+
+        String escapedString = StringEscapeUtils.unescapeXml(csvString);
+        CSVReader csvReader =
+                new CSVReader(new StringReader(escapedString), CSVReader.DEFAULT_SEPARATOR, CSVReader.DEFAULT_QUOTE_CHARACTER);
+        List<String[]> lines = csvReader.readAll();
+        String[] headerRow = lines.get(0);
+
+        for (int i = 0; i < headerRow.length; i++) {
+            headerRow[i] = removeQuotes(headerRow[i]);
+        }
+        Stream<String[]> csvArrayStream = lines.stream();
+        csvArrayStream = csvArrayStream.skip(1);
+        List<JsonObject> jsonObjectList = csvArrayStream
+                .map(row -> {
+                    JsonObject jsonObject = new JsonObject();
+
+                    for (int i = 0; i < row.length; i++) {
+                        JsonPrimitive value = getCellValue(row, i);
+                        String key = headerRow[i];
+                        jsonObject.add(key, value);
+                    }
+
+                    return jsonObject;
+                })
+                .collect(Collectors.toList());
+        Gson gson = new GsonBuilder()
+                .disableHtmlEscaping()
+                .setPrettyPrinting()
+                .create();
+        String jsonString = gson.toJson(jsonObjectList);
+        return jsonString;
+    }
+
+    public static JsonPrimitive getCellValue(String[] row, int index) {
+
+        JsonPrimitive cellValue = null;
+        String cellValueString = removeQuotes(row[index]);
+        if (StringUtils.isNotBlank(cellValueString)) {
+            cellValue = new JsonPrimitive(cellValueString);
+        } else {
+            cellValue = new JsonPrimitive("");
+        }
+        return cellValue;
+    }
+
+    private static String removeQuotes(String field) {
+
+        field = field.replace("\"", "");
+        return field;
+    }
+
+    public static String csvToJson_old(String csvString) {
         String[] lines = csvString.split("\n");
         String[] headers = lines[0].split(",");
         for (int i = 0; i < headers.length; i++) {

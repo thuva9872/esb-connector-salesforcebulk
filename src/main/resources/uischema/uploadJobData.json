@@ -42,39 +42,11 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "inputType",
-                    "displayName": "Input type",
-                    "inputType": "comboOrExpression",
-                    "comboValues": [
-                      "FILE",
-                      "INLINE"
-                    ],
-                    "defaultValue": "",
-                    "required": "true",
-                    "helpTip": "The ID of the job to upload data to"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
                     "name": "inputData",
                     "displayName": "Input Data",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
-                    "required": "false",
-                    "enableCondition": [{"inputType": "INLINE"}],
-                    "helpTip": "The ID of the job to upload data to"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "filePath",
-                    "displayName": "File Path",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "enableCondition": [{"inputType": "FILE"}],
+                    "required": "true",
                     "helpTip": "The ID of the job to upload data to"
                   }
                 }

@@ -23,5 +23,20 @@
 			<description>Init operation</description>
 			<hidden>true</hidden>
 		</component>
-    </subComponents>    
+		<component name="callBulkApi">
+			<file>callBulkApi.xml</file>
+			<description>Call Salesforce Bulk API endpoints</description>
+			<hidden>true</hidden>
+		</component>
+		<component name="callUsingOauth">
+			<file>callUsingOauth.xml</file>
+			<description>Call endpoint using OAUTH credentials</description>
+			<hidden>true</hidden>
+		</component>
+		<component name="callUsingAccessToken">
+			<file>callUsingAccessToken.xml</file>
+			<description>Call endpoint using OAUTH access token</description>
+			<hidden>true</hidden>
+		</component>
+	</subComponents>
 </component>

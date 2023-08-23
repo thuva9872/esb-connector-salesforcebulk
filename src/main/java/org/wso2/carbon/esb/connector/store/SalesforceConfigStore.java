@@ -46,5 +46,4 @@ public class SalesforceConfigStore {
     public static SalesforceConfig getSalesforceConfig(String salesforceConfigName) {
         return salesforceConfigMap.get(salesforceConfigName);
     }
-
 }

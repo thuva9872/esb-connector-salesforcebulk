@@ -18,13 +18,12 @@
 package org.wso2.carbon.esb.connector.utils;
 
 public class SalesforceConstants {
-    public static final String ACCESS_TOKEN = "accessToken";
-    public static final String RENEWED_ACCESS_TOKEN = "renewedAccessToken";
-    public static final String REFRESH_TOKEN = "refreshToken";
-    public static final String CLIENT_ID = "clientId";
-    public static final String CLIENT_SECRET = "clientSecret";
-    public static final String SF_OAUTH_CONFIG_NAME = "name";
-    public static final String INSTANCE_URL = "instanceUrl";
+    public static final String ACCESS_TOKEN = "sf_bulk_accessToken";
+    public static final String REFRESH_TOKEN = "sf_bulk_refreshToken";
+    public static final String CLIENT_ID = "sf_bulk_clientId";
+    public static final String CLIENT_SECRET = "sf_bulk_clientSecret";
+    public static final String SF_OAUTH_CONFIG_NAME = "sf_bulk_config_name";
+    public static final String INSTANCE_URL = "sf_bulk_instanceUrl";
     public static final String SF_API_VERSION = "v57.0";
     public static final String SF_API_JOBS_INGEST_RELATIVE_PATH = "/services/data/"
             + SF_API_VERSION + "/jobs/ingest/";
@@ -44,16 +43,28 @@ public class SalesforceConstants {
     public static final String OBJECT = "object";
     public static final String JOB_ID = "jobId";
     public static final String QUERY_JOB_ID = "queryJobId";
-    public static final String FILE_PATH = "filePath";
     public static final String QUERY = "query";
     public static final String LOCATOR = "locator";
     public static final String MAX_RECORDS = "maxRecords";
-    public static final String CLOSE_JOB_URL = "closeJobUrl";
-    public static final String ABORT_JOB_URL = "abortJobUrl";
-    public static final String ABORT_QUERY_JOB_URL = "abortQueryJobUrl";
+    public static final String CLOSE_JOB_URL = "sf_bulk_closeJobUrl";
+    public static final String ABORT_JOB_URL = "sf_bulk_abortJobUrl";
+    public static final String ABORT_QUERY_JOB_URL = "sf_bulk_abortQueryJobUrl";
+    public static final String CREATE_JOB_URL = "sf_bulk_createJobUrl";
+    public static final String CREATE_QUERY_JOB_URL = "sf_bulk_createQueryJobUrl";
+    public static final String DELETE_JOB_URL = "sf_bulk_deleteJobUrl";
+    public static final String DELETE_QUERY_JOB_URL = "sf_bulk_deleteQueryJobUrl";
+    public static final String ALL_JOB_INFO_URL = "sf_bulk_allJobInfoUrl";
+    public static final String ALL_QUERY_JOB_INFO_URL = "sf_bulk_allQueryJobInfoUrl";
+    public static final String GET_FAILED_RESULTS_URL = "sf_bulk_getFailedResultsUrl";
+    public static final String JOB_INFO_URL = "sf_bulk_jobInfoUrl";
+    public static final String QUERY_JOB_INFO_URL = "sf_bulk_queryJobInfoUrl";
+    public static final String GET_QUERY_JOB_RESULTS_URL = "sf_bulk_getQueryJobResultsUrl";
+    public static final String GET_SUCCESSFUL_RESULTS_URL = "sf_bulk_getSuccessfulResultsUrl";
+    public static final String GET_UNPROCESSED_RESULTS_URL = "sf_bulk_getUnprocessedResultsUrl";
+    public static final String UPLOAD_JOB_DATA_URL = "sf_bulk_uploadJobUrl";
+    public static final String TOKEN_URL = "sf_bulk_tokenUrl";
+    public static final String PAYLOAD = "sf_bulk_payload";
     public static final String INPUT_DATA = "inputData";
-    public static final String INPUT_TYPE = "inputType";
-    public static final String OUTPUT_TYPE = "outputType";
     public static final String IS_PK_CHUNKING_ENABLED = "isPkChunkingEnabled";
     public static final String JOB_TYPE = "jobType";
     public static final String QUERY_LOCATOR = "queryLocator";

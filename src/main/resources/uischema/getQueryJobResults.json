@@ -68,24 +68,12 @@
                     "displayName": "Output type",
                     "inputType": "comboOrExpression",
                     "comboValues": [
-                      "FILE",
-                      "BODY"
+                      "JSON",
+                      "CSV"
                     ],
-                    "defaultValue": "",
+                    "defaultValue": "JSON",
                     "required": "true",
-                    "helpTip": "The ID of the job to upload data to"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "filePath",
-                    "displayName": "File Path",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "enableCondition": [{"outputType": "FILE"}],
-                    "helpTip": "The path to the file to write the results to."
+                    "helpTip": "Output Content Type"
                   }
                 }
               ]

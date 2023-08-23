@@ -19,13 +19,9 @@ package org.wso2.carbon.esb.connector.operations;
 
 import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.esb.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.esb.connector.exception.SalesforceConnectionException;
 import org.wso2.carbon.esb.connector.pojo.SalesforceConfig;
-import org.wso2.carbon.esb.connector.requests.SalesforceRequest;
 import org.wso2.carbon.esb.connector.store.SalesforceConfigStore;
-import org.wso2.carbon.esb.connector.utils.InputOutputType;
-import org.wso2.carbon.esb.connector.utils.ResponseConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceUtils;
 
@@ -35,10 +31,7 @@ public class GetQueryJobResult extends AbstractConnector {
         try {
             String sfOAuthConfigName = SalesforceUtils.getConnectionName(messageContext);
             SalesforceConfig salesforceConfig = SalesforceConfigStore.getSalesforceConfig(sfOAuthConfigName);
-            SalesforceRequest salesforceRequest = new SalesforceRequest(salesforceConfig, messageContext);
             String queryJobId = (String) getParameter(messageContext, SalesforceConstants.QUERY_JOB_ID);
-            String filePath = (String) getParameter(messageContext, SalesforceConstants.FILE_PATH);
-            log.debug("Getting query job results with id: " + queryJobId + ". File path: " + filePath);
             String maxRecords = (String) getParameter(messageContext, SalesforceConstants.MAX_RECORDS);
             Integer maxRecordsInt = null;
             if (maxRecords != null) {
@@ -52,21 +45,8 @@ public class GetQueryJobResult extends AbstractConnector {
                 }
             }
             String locator = (String) getParameter(messageContext, SalesforceConstants.LOCATOR);
-            String outputType = (String) getParameter(messageContext, SalesforceConstants.OUTPUT_TYPE);
-            if (InputOutputType.FILE.toString().equals(outputType)) {
-                if (filePath == null || filePath.isEmpty()) {
-                    throw new InvalidConfigurationException("File path is not specified");
-                }
-                salesforceRequest.getQueryJobResultsAndStoreInFile(queryJobId, filePath, maxRecordsInt, locator);
-                SalesforceUtils.generateJsonOutput(messageContext, SalesforceUtils.getSuccessJson(),
-                        ResponseConstants.HTTP_OK);
-            } else if (InputOutputType.BODY.toString().equals(outputType)){
-                String response = salesforceRequest.getQueryJobResults(queryJobId, maxRecordsInt, locator);
-                SalesforceUtils.generateJsonOutput(messageContext, SalesforceUtils.csvToJson(response),
-                        ResponseConstants.HTTP_OK);
-            } else {
-                throw new InvalidConfigurationException("Invalid input type: " + outputType);
-            }
+            String queryJobResultUrl = SalesforceUtils.getGetQueryJobResultUrl(salesforceConfig, queryJobId, maxRecordsInt, locator);
+            messageContext.setProperty(SalesforceConstants.GET_QUERY_JOB_RESULTS_URL, queryJobResultUrl);
         } catch (Exception e) {
             SalesforceUtils.setErrorsInMessage(messageContext, 1, e.getMessage());
             SalesforceUtils.generateErrorOutput(messageContext, e);

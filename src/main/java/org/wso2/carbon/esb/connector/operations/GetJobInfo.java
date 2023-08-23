@@ -21,9 +21,7 @@ import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.esb.connector.exception.SalesforceConnectionException;
 import org.wso2.carbon.esb.connector.pojo.SalesforceConfig;
-import org.wso2.carbon.esb.connector.requests.SalesforceRequest;
 import org.wso2.carbon.esb.connector.store.SalesforceConfigStore;
-import org.wso2.carbon.esb.connector.utils.ResponseConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceUtils;
 
@@ -33,11 +31,10 @@ public class GetJobInfo extends AbstractConnector {
         try {
             String sfOAuthConfigName = SalesforceUtils.getConnectionName(messageContext);
             SalesforceConfig salesforceConfig = SalesforceConfigStore.getSalesforceConfig(sfOAuthConfigName);
-            SalesforceRequest salesforceRequest = new SalesforceRequest(salesforceConfig, messageContext);
             String jobId = (String) getParameter(messageContext, SalesforceConstants.JOB_ID);
             log.debug("Getting job info with id: " + jobId);
-            String jobInfo = salesforceRequest.getJobInfo(jobId);
-            SalesforceUtils.generateJsonOutput(messageContext, jobInfo, ResponseConstants.HTTP_OK);
+            String jobInfoUrl = SalesforceUtils.getGetJobInfoUrl(salesforceConfig, jobId);
+            messageContext.setProperty(SalesforceConstants.JOB_INFO_URL, jobInfoUrl);
         } catch (Exception e) {
             SalesforceUtils.setErrorsInMessage(messageContext, 1, e.getMessage());
             SalesforceUtils.generateErrorOutput(messageContext, e);

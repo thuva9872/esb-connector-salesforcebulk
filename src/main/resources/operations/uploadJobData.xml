@@ -1,13 +1,41 @@
+<!--
+  ~ Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+  ~
+  ~ WSO2 LLC. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
 <template xmlns="http://ws.apache.org/ns/synapse" name="uploadJobData">
     <parameter name="jobId" description="Job ID"/>
-    <parameter name="inputType" description="Input Type"/>
     <parameter name="inputData" description="Input Data"/>
-    <parameter name="filePath" description="File Path"/>
     <sequence>
-        <property name="jobId" expression="$func:jobId" />
-        <property name="inputType" expression="$func:inputType" />
-        <property name="inputData" expression="$func:inputData" />
-        <property name="filePath" expression="$func:filePath" />
-        <class name="org.wso2.carbon.esb.connector.operations.UploadJobData" />
+        <property name="jobId" expression="$func:jobId"/>
+        <property name="sf_bulk_inputData" expression="$func:inputData"/>
+        <class name="org.wso2.carbon.esb.connector.operations.UploadJobData"/>
+        <property name="uri.var.url" expression="get-property('sf_bulk_uploadJobUrl')"/>
+        <payloadFactory media-type="text">
+            <format>
+                $1
+            </format>
+            <args>
+                <arg evaluator="xml" expression="$ctx:sf_bulk_inputData"/>
+            </args>
+        </payloadFactory>
+        <salesforce_bulkapi_v2.callBulkApi>
+            <method>put</method>
+            <url>{uri.var.url}</url>
+            <contentType>text/csv</contentType>
+        </salesforce_bulkapi_v2.callBulkApi>
     </sequence>
 </template>

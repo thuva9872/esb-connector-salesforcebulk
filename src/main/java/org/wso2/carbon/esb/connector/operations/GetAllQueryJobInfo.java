@@ -21,9 +21,7 @@ import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.esb.connector.exception.SalesforceConnectionException;
 import org.wso2.carbon.esb.connector.pojo.SalesforceConfig;
-import org.wso2.carbon.esb.connector.requests.SalesforceRequest;
 import org.wso2.carbon.esb.connector.store.SalesforceConfigStore;
-import org.wso2.carbon.esb.connector.utils.ResponseConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceUtils;
 
@@ -34,13 +32,12 @@ public class GetAllQueryJobInfo extends AbstractConnector {
             log.debug("Getting all query job info");
             String sfOAuthConfigName = SalesforceUtils.getConnectionName(messageContext);
             SalesforceConfig salesforceConfig = SalesforceConfigStore.getSalesforceConfig(sfOAuthConfigName);
-            SalesforceRequest salesforceRequest = new SalesforceRequest(salesforceConfig, messageContext);
-            Boolean isPkChunkingEnabled = (Boolean) getParameter(messageContext, SalesforceConstants.IS_PK_CHUNKING_ENABLED);
+            String isPkChunkingEnabledValue = (String) getParameter(messageContext, SalesforceConstants.IS_PK_CHUNKING_ENABLED);
+            Boolean isPkChunkingEnabled = Boolean.parseBoolean(isPkChunkingEnabledValue);
             String jobType = (String) getParameter(messageContext, SalesforceConstants.JOB_TYPE);
             String queryLocator = (String) getParameter(messageContext, SalesforceConstants.QUERY_LOCATOR);
-            String getAllQueryJobResponse = salesforceRequest.getAllQueryJobInfo(isPkChunkingEnabled, jobType, queryLocator);
-            SalesforceUtils.generateJsonOutput(messageContext, getAllQueryJobResponse,
-                    ResponseConstants.HTTP_OK);
+            String allQueryJobInfoUrl = SalesforceUtils.getGetAllQueryJobInfoUrl(salesforceConfig, isPkChunkingEnabled, jobType, queryLocator);
+            messageContext.setProperty(SalesforceConstants.ALL_QUERY_JOB_INFO_URL, allQueryJobInfoUrl);
         } catch (Exception e) {
             SalesforceUtils.setErrorsInMessage(messageContext, 1, e.getMessage());
             SalesforceUtils.generateErrorOutput(messageContext, e);

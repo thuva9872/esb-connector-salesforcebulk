@@ -22,10 +22,7 @@ import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.esb.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.esb.connector.exception.SalesforceConnectionException;
 import org.wso2.carbon.esb.connector.pojo.SalesforceConfig;
-import org.wso2.carbon.esb.connector.requests.SalesforceRequest;
 import org.wso2.carbon.esb.connector.store.SalesforceConfigStore;
-import org.wso2.carbon.esb.connector.utils.InputOutputType;
-import org.wso2.carbon.esb.connector.utils.ResponseConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceUtils;
 
@@ -35,34 +32,17 @@ public class UploadJobData extends AbstractConnector {
         try {
             String sfOAuthConfigName = SalesforceUtils.getConnectionName(messageContext);
             SalesforceConfig salesforceConfig = SalesforceConfigStore.getSalesforceConfig(sfOAuthConfigName);
-            SalesforceRequest salesforceRequest = new SalesforceRequest(salesforceConfig, messageContext);
             String jobId = (String) getParameter(messageContext, SalesforceConstants.JOB_ID);
-            String filePath = (String) getParameter(messageContext, SalesforceConstants.FILE_PATH);
             Object inputData = getParameter(messageContext, SalesforceConstants.INPUT_DATA);
-            String inputDataStr;
+            String inputDataStr = null;
             if (inputData != null) {
-                inputDataStr = getParameter(messageContext, SalesforceConstants.INPUT_DATA).toString();
-            } else {
-                inputDataStr = null;
+                inputDataStr = inputData.toString();
             }
-            String inputType = (String) getParameter(messageContext, SalesforceConstants.INPUT_TYPE);
-            if (InputOutputType.FILE.toString().equals(inputType)) {
-                if (filePath == null || filePath.isEmpty()) {
-                    throw new InvalidConfigurationException("File path is not specified");
-                }
-                log.debug("Uploading job data for job with id: " + jobId + ". File path: " + filePath);
-                salesforceRequest.uploadJobDataFromFile(jobId, filePath);
-            } else if (InputOutputType.INLINE.toString().equals(inputType)) {
-                if (inputDataStr == null || inputDataStr.isEmpty()) {
-                    throw new InvalidConfigurationException("Input data is not specified");
-                }
-                log.debug("Uploading job data for job with id: " + jobId + ". Input data: " + inputDataStr);
-                salesforceRequest.uploadJobData(jobId, inputDataStr);
-            } else {
-                throw new InvalidConfigurationException("Invalid input type: " + inputType);
+            if (inputDataStr == null || inputDataStr.isEmpty()) {
+                throw new InvalidConfigurationException("Input data is not specified");
             }
-            SalesforceUtils.generateJsonOutput(messageContext, SalesforceUtils.getSuccessJson(),
-                    ResponseConstants.HTTP_OK);
+            String uploadJobDataUrl = SalesforceUtils.getUploadJobDataUrl(salesforceConfig, jobId);
+            messageContext.setProperty(SalesforceConstants.UPLOAD_JOB_DATA_URL, uploadJobDataUrl);
         } catch (Exception e) {
             SalesforceUtils.setErrorsInMessage(messageContext, 1, e.getMessage());
             SalesforceUtils.generateErrorOutput(messageContext, e);

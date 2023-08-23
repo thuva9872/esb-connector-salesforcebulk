@@ -48,9 +48,10 @@
                     "comboValues": [
                       "Classic",
                       "V2Query",
-                      "UPSERT"
+                      "V2Ingest",
+                      "All"
                     ],
-                    "defaultValue": "",
+                    "defaultValue": "All",
                     "required": "false",
                     "helpTip": "Job Type"
                   }

@@ -23,9 +23,7 @@ import org.wso2.carbon.esb.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.esb.connector.exception.SalesforceConnectionException;
 import org.wso2.carbon.esb.connector.pojo.CreateJobPayload;
 import org.wso2.carbon.esb.connector.pojo.SalesforceConfig;
-import org.wso2.carbon.esb.connector.requests.SalesforceRequest;
 import org.wso2.carbon.esb.connector.store.SalesforceConfigStore;
-import org.wso2.carbon.esb.connector.utils.ResponseConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceConstants;
 import org.wso2.carbon.esb.connector.utils.SalesforceUtils;
 
@@ -36,10 +34,11 @@ public class CreateJob extends AbstractConnector {
             log.debug("Creating salesforce job");
             String sfOAuthConfigName = SalesforceUtils.getConnectionName(messageContext);
             SalesforceConfig salesforceConfig = SalesforceConfigStore.getSalesforceConfig(sfOAuthConfigName);
-            SalesforceRequest salesforceRequest = new SalesforceRequest(salesforceConfig, messageContext);
             CreateJobPayload createJobPayload = getCreateJobPayload(messageContext);
-            String jobInfo = salesforceRequest.createJob(createJobPayload);
-            SalesforceUtils.generateJsonOutput(messageContext, jobInfo, ResponseConstants.HTTP_CREATED);
+            String createJobUrl = SalesforceUtils.getCreateJobUrl(salesforceConfig);
+            messageContext.setProperty(SalesforceConstants.CREATE_JOB_URL, createJobUrl);
+            String payload = createJobPayload.toJson();
+            messageContext.setProperty(SalesforceConstants.PAYLOAD, payload);
         } catch (Exception e) {
             SalesforceUtils.setErrorsInMessage(messageContext, 1, e.getMessage());
             SalesforceUtils.generateErrorOutput(messageContext, e);
